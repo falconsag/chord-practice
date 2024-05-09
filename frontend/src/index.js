@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import MyChord from "./MyChord";
+import Button from '@mui/material/Button';
 
 
 const chord_am = {
@@ -28,7 +29,9 @@ function App() {
         <React.StrictMode>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <MyChord chord={currentChord} name={currentChord === chord_am ? 'Am' : 'C'} />
-                <button onClick={handleRandomChord}>Random Chord</button>
+                <Button variant="contained" onClick={handleRandomChord}>
+                    Random Chord
+                </Button>
             </div>
         </React.StrictMode>
     );
