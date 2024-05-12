@@ -1,7 +1,17 @@
-version: '3.8' 
+version: '3.8'
 services:
   frontend:
-      container_name: chords-frontend
-      build: ./frontend
-      ports:
-        - "10200:80"
+    container_name: chords-frontend
+    build: ./frontend
+    ports:
+      - "10200:80"
+
+  backend:
+    container_name: chords-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "10201:10201"
+    volumes:
+      - ./backend:/app
