@@ -14,9 +14,10 @@ import java.util.stream.Collectors;
 import org.falconsag.chordpractice.backend.model.AbstractChordVariations;
 import org.falconsag.chordpractice.backend.model.Chord;
 import org.falconsag.chordpractice.backend.model.ChordData;
+import org.falconsag.chordpractice.backend.model.ChordRequest;
 import org.falconsag.chordpractice.backend.model.ChordVariations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,23 +31,17 @@ public class ChordPracticeController {
 		}
 	}
 
-	@GetMapping(value = "/chord", produces = "application/json")
-	public Chord getChord() {
-		return getRandomChord();
+	@PostMapping(value = "/chord", produces = "application/json")
+	public Chord getChord(@RequestBody ChordRequest request) {
+		return getRandomChord(request);
 	}
 
-	private Chord getRandomChord() {
+	private Chord getRandomChord(ChordRequest request) {
 		Map<String, List<ChordVariations>> chordsMap = chordData.getChords();
-		int i = rand.nextInt(chordsMap.size());
-		Set<Map.Entry<String, List<ChordVariations>>> entries = chordsMap.entrySet();
-		int currCount = -1;
-		Iterator<Map.Entry<String, List<ChordVariations>>> it = entries.iterator();
-		List<ChordVariations> chords = null;
-		while (currCount++ < i) {
-			chords = it.next().getValue();
-		}
+		Set<String> requestedKeys = request.getKeys();
+		String randomKey = requestedKeys.stream().skip(rand.nextInt(requestedKeys.size())).findFirst().get();
+		List<ChordVariations> chords = chordsMap.get(randomKey);
 		Map<String, ChordVariations> chordsByKey = chords.stream().collect(Collectors.toMap(AbstractChordVariations::getSuffix, Function.identity()));
-
 		Collection<ChordVariations> chordVariations = chordsByKey.values();
 		ChordVariations selectedVariations = chordVariations.stream().skip(rand.nextInt(chordVariations.size())).findFirst().get();
 		List<Chord> ch = selectedVariations.getPositions();
