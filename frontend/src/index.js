@@ -1,17 +1,26 @@
 import React, {useState, useEffect, useRef} from 'react';
 import ReactDOM from 'react-dom/client';
 import MyChord from "./MyChord";
+import Checkbox from '@mui/material/Checkbox';
+import {FormControlLabel, FormGroup} from "@mui/material";
 
 function App() {
     const [chord1, setChord1] = useState(null);
     const [countdown, setCountdown] = useState(20);
+    const [selectedKeys, setSelectedKeys] = useState(["C", "D", "E", "F", "G", "A", "B"]);
     const countdownRef = useRef(null); // Ref to hold the interval ID
 
     const fetchChord = async () => {
         setCountdown(20); // Reset countdown
 
         try {
-            const response = await fetch('http://localhost:10201/chord');
+            const response = await fetch('http://localhost:10201/chord', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ keys: selectedKeys })
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -36,37 +45,29 @@ function App() {
             setChord1(newChord1);
         }
     };
-    // useEffect(() => {
-    //     fetchAndSetChord();
-    //     const intervalId = setInterval(() => {
-    //         fetchAndSetChord();
-    //     }, 20000);
-    //
-    //     return () => clearInterval(intervalId);
-    // }, []);
-
-    // useEffect(() => {
-    //     if (countdown === 0) {
-    //         // When the countdown hits 0, clear the interval to stop it
-    //         clearInterval(countdownRef.current);
-    //     } else {
-    //         // Start or restart the countdown interval
-    //         countdownRef.current = setInterval(() => {
-    //             setCountdown(prevCountdown => prevCountdown - 1);
-    //         }, 1000); // Decrease by 1 every second
-    //     }
-    //
-    //     return () => clearInterval(countdownRef.current); // Clean up interval on unmount or when countdown reaches 0
-    // }, [countdown]);
-
     const handleRandomChord = () => {
         fetchAndSetChord();
+    };
+
+    const handleCheckboxChange = (key) => (event) => {
+        setSelectedKeys(prevKeys =>
+            event.target.checked ? [...prevKeys, key] : prevKeys.filter(k => k !== key)
+        );
     };
 
     return (
         <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
             {chord1 ? (
                 <div style={{display: 'flex', justifyContent: 'space-around'}}>
+                    <FormGroup>
+                        {["C", "D", "E", "F", "G", "A", "B"].map(key => (
+                            <FormControlLabel
+                                key={key}
+                                control={<Checkbox checked={selectedKeys.includes(key)} onChange={handleCheckboxChange(key)} />}
+                                label={key}
+                            />
+                        ))}
+                    </FormGroup>
                     <MyChord chord={chord1} name={chord1.name}/>
                 </div>
             ) : (
