@@ -11,4 +11,6 @@ import org.immutables.value.Value;
 public interface AbstractChordRequest {
 
 	Set<String> getKeys();
+
+	Set<String> getSuffixes();
 }

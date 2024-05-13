@@ -8,6 +8,7 @@ function App() {
     const [chord1, setChord1] = useState(null);
     const [countdown, setCountdown] = useState(20);
     const [selectedKeys, setSelectedKeys] = useState(["C", "D", "E", "F", "G", "A", "B"]);
+    const [selectedSuffixes, setSelectedSuffixes] = useState(["major", "minor", "maj7", "m7"]);
     const countdownRef = useRef(null); // Ref to hold the interval ID
 
     const fetchChord = async () => {
@@ -19,7 +20,7 @@ function App() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ keys: selectedKeys })
+                body: JSON.stringify({ keys: selectedKeys, suffixes: selectedSuffixes })
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -49,8 +50,13 @@ function App() {
         fetchAndSetChord();
     };
 
-    const handleCheckboxChange = (key) => (event) => {
+    const handleKeysCheckboxChange = (key) => (event) => {
         setSelectedKeys(prevKeys =>
+            event.target.checked ? [...prevKeys, key] : prevKeys.filter(k => k !== key)
+        );
+    };
+    const handleSuffixCheckboxChange = (key) => (event) => {
+        setSelectedSuffixes(prevKeys =>
             event.target.checked ? [...prevKeys, key] : prevKeys.filter(k => k !== key)
         );
     };
@@ -63,8 +69,17 @@ function App() {
                         {["C", "D", "E", "F", "G", "A", "B"].map(key => (
                             <FormControlLabel
                                 key={key}
-                                control={<Checkbox checked={selectedKeys.includes(key)} onChange={handleCheckboxChange(key)} />}
+                                control={<Checkbox checked={selectedKeys.includes(key)} onChange={handleKeysCheckboxChange(key)} />}
                                 label={key}
+                            />
+                        ))}
+                    </FormGroup>
+                    <FormGroup>
+                        {["major", "minor", "maj7", "m7","madd9", "m9"].map(type => (
+                            <FormControlLabel
+                                key={type}
+                                control={<Checkbox checked={selectedSuffixes.includes(type)} onChange={handleSuffixCheckboxChange(type)} />}
+                                label={type}
                             />
                         ))}
                     </FormGroup>
