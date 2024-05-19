@@ -24,9 +24,4 @@ const MyChord = ({chord, name}) => {
     )
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-    <MyChord/>
-);
-
 export default MyChord;
