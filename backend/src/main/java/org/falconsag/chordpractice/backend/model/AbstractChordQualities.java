@@ -5,8 +5,8 @@ import java.util.List;
 import org.immutables.value.Value;
 
 @Value.Immutable
-@JsonDeserialize(as = ChordVariations.class, builder = ChordVariations.Builder.class)
-public interface AbstractChordVariations {
+@JsonDeserialize(as = ChordQualities.class, builder = ChordQualities.Builder.class)
+public interface AbstractChordQualities {
 
 	List<Chord> getPositions();
 

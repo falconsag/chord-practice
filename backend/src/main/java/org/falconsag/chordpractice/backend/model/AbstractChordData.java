@@ -8,5 +8,6 @@ import org.immutables.value.Value;
 @Value.Immutable
 @JsonDeserialize(as = ChordData.class, builder = ChordData.Builder.class)
 public interface AbstractChordData {
-	Map<String, List<ChordVariations>> getChords();
+	Map<String, List<ChordQualities>> getChords();
+	List<String> getSuffixes();
 }
