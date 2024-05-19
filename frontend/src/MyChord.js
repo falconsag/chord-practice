@@ -4,7 +4,7 @@ import './MyChord.css';
 
 import Chord from '@tombatossals/react-chords/lib/Chord';
 
-const MyChord = ({chord, name}) => {
+const MyChord = ({chord}) => {
 
     const instrument = {
         strings: 6,
@@ -18,7 +18,7 @@ const MyChord = ({chord, name}) => {
     const lite = false // defaults to false if omitted
     return (
         <div className="chord-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <p style={{margin: 0}}>{name}</p>
+            <p style={{margin: 0}}>{chord.name}</p>
             <Chord chord={chord} instrument={instrument} lite={lite} style={{marginTop: '-10px'}}/>
         </div>
     )
