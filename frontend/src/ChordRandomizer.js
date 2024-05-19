@@ -5,42 +5,13 @@ import Checkbox from '@mui/material/Checkbox';
 import {FormControlLabel, FormGroup} from "@mui/material";
 
 function ChordRandomizer() {
-    const [chord1, setChord1] = useState(null);
+    const [chord, setChord] = useState(null);
     const [countdown, setCountdown] = useState(20);
     const [selectedKeys, setSelectedKeys] = useState(["C", "D", "E", "F", "G", "A", "B"]);
     const [selectedSuffixes, setSelectedSuffixes] = useState(["major", "minor", "maj7", "m7"]);
+    const [chordCounter, setChordCounter] = useState(0);
     useRef(null);
-
-    const fetchChordWithParams = async () => {
-        setCountdown(20); // Reset countdown
-
-        try {
-            const response = await fetch('http://localhost:10201/chord', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({keys: selectedKeys, suffixes: selectedSuffixes})
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            return {
-                name: data.name,
-                frets: data.frets.map(Number),
-                fingers: data.fingers.map(Number),
-                capo: false,
-                baseFret: data.baseFret,
-                barres: data.barres.map(Number)
-            };
-
-        } catch (error) {
-            console.error('Error fetching chord:', error);
-        }
-    };
-
-    const fetchPersonalChord = async () => {
+    const fetchChordsToPractice = async () => {
         setCountdown(20); // Reset countdown
 
         try {
@@ -54,29 +25,34 @@ function ChordRandomizer() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            return {
-                name: data.name,
-                frets: data.frets.map(Number),
-                fingers: data.fingers.map(Number),
+            return data.map(item => ({
+                name: item.name,
+                frets: item.frets.map(Number),
+                fingers: item.fingers.map(Number),
                 capo: false,
-                baseFret: data.baseFret,
-                barres: data.barres.map(Number)
-            };
-
+                baseFret: item.baseFret,
+                barres: item.barres.map(Number)
+            }));
         } catch (error) {
             console.error('Error fetching chord:', error);
         }
     };
 
     const fetchAndSetChord = async () => {
-        const newChord1 = await fetchPersonalChord();
-        if (newChord1) {
-            setChord1(newChord1);
+        const chords = await fetchChordsToPractice();
+        if (chords) {
+            setChordCounter(0)
+            setChord(chords);
         }
     };
     const handleRandomChord = () => {
         fetchAndSetChord();
     };
+
+    const handleNextChord = () => {
+        setChordCounter(prevCounter => (prevCounter + 1) % chord.length);
+    }
+
 
     const handleKeysCheckboxChange = (key) => (event) => {
         setSelectedKeys(prevKeys =>
@@ -91,7 +67,7 @@ function ChordRandomizer() {
 
     return (
         <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-            {chord1 ? (
+            {chord ? (
                 <div style={{display: 'flex', justifyContent: 'space-around'}}>
                     <FormGroup>
                         {["C", "D", "E", "F", "G", "A", "B"].map(key => (
@@ -113,14 +89,15 @@ function ChordRandomizer() {
                             />
                         ))}
                     </FormGroup>
-                    <MyChord chord={chord1} name={chord1.name}/>
+                    <MyChord chord={chord[chordCounter]} name={chord[chordCounter].name}/>
                 </div>
             ) : (
                 <p>Loading chord...</p>
             )}
             <div>
-                <button onClick={handleRandomChord}>Next Chord</button>
-                <p>Changing in: {countdown}</p> {/* Display the countdown */}
+                <button onClick={handleRandomChord}>Restart</button>
+                <button onClick={handleNextChord}>Next Chord</button>
+                <p>Changing in: {countdown}</p> {}
             </div>
         </div>
     );
