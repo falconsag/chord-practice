@@ -1,10 +1,12 @@
 package org.falconsag.chordpractice.backend;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +29,7 @@ public class ChordPracticeService {
 	private static final String KEY_REGEX = "[CDEFGAB][#b]?";
 	private final Random rand = new Random();
 	private final ChordData chordData;
+	private final List<Chord> personalChordData;
 	private final List<String> chordSuffixes;
 	private final Pattern notationPattern;
 
@@ -41,9 +44,19 @@ public class ChordPracticeService {
 		chordSuffixes = new ArrayList<>(chordData.getSuffixes());
 		chordSuffixes.sort((s1, s2) -> s2.length() - s1.length());
 		notationPattern = buildChordNotationPattern();
+		try (InputStream is = getClass().getResourceAsStream("/personal-chords.json")) {
+			personalChordData = om.readValue(is, new TypeReference<>() {
+			});
+		}
 	}
 
-	public Chord getPersonalChordPractice() {
+	public List<Chord> getPersonalChords() {
+		ArrayList<Chord> personalChords = new ArrayList<>(personalChordData);
+		Collections.shuffle(personalChords);
+		return personalChords;
+	}
+
+	public Chord getChordBySearchNotation() {
 		String notation = getRandomElement(PERSONAL_CHORDS);
 		Matcher matcher = notationPattern.matcher(notation);
 		if (matcher.find()) {

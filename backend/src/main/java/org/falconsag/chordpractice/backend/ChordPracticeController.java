@@ -1,5 +1,6 @@
 package org.falconsag.chordpractice.backend;
 
+import java.util.List;
 import org.falconsag.chordpractice.backend.model.Chord;
 import org.falconsag.chordpractice.backend.model.ChordRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +24,8 @@ public class ChordPracticeController {
 
 
 	@GetMapping(value = "/chords/personal", produces = "application/json")
-	public Chord getPersonalChord() {
-		return service.getPersonalChordPractice();
+	public List<Chord> getPersonalChord() {
+		return service.getPersonalChords();
 	}
 
 
