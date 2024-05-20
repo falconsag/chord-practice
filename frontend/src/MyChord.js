@@ -19,7 +19,7 @@ const MyChord = ({chord}) => {
     return (
         <div className="chord-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <p style={{margin: 0}}>{chord.name}</p>
-            <Chord chord={chord} instrument={instrument} lite={lite} style={{marginTop: '-10px'}}/>
+            <Chord chord={chord} instrument={instrument} lite={lite}/>
         </div>
     )
 }

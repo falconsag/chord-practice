@@ -1,33 +1,25 @@
-import React, {useState} from 'react';
-import MyNavbar from './MyNavbar';
-import Home from './Home';
-import ChordRandomizer from "./ChordRandomizer";
+import React, { useRef, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-function App() {
-    const [activePage, setActivePage] = useState('home');
+import 'swiper/css';
+import 'swiper/css/navigation';
+import './swiper.css';
+import { Navigation } from 'swiper/modules';
 
-    const handleNavigation = (pageName) => {
-        setActivePage(pageName);
-    };
-
-    let content;
-    switch (activePage) {
-        case 'home':
-            content = <Home/>;
-            break;
-        case 'personal-single-chords':
-            content = <ChordRandomizer/>;
-            break;
-        default:
-            content = <Home/>;
-    }
-
+export default function App() {
     return (
-        <div className="App">
-            <MyNavbar onNavigationClick={handleNavigation}/>
-            {content}
-        </div>
+        <>
+            <Swiper navigation={true} slidesPerView={3} modules={[Navigation]} className="mySwiper">
+                <SwiperSlide>Slide 1</SwiperSlide>
+                <SwiperSlide>Slide 2</SwiperSlide>
+                <SwiperSlide>Slide 3</SwiperSlide>
+                <SwiperSlide>Slide 4</SwiperSlide>
+                <SwiperSlide>Slide 5</SwiperSlide>
+                <SwiperSlide>Slide 6</SwiperSlide>
+                <SwiperSlide>Slide 7</SwiperSlide>
+                <SwiperSlide>Slide 8</SwiperSlide>
+                <SwiperSlide>Slide 9</SwiperSlide>
+            </Swiper>
+        </>
     );
 }
-
-export default App;

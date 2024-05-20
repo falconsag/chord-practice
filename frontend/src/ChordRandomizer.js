@@ -1,13 +1,16 @@
 import React, {useState, useRef, useEffect} from 'react';
-import ReactDOM from 'react-dom/client';
 import MyChord from './MyChord';
 import Checkbox from '@mui/material/Checkbox';
 import {FormControlLabel, FormGroup} from '@mui/material';
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import {Pagination, Navigation, Mousewheel} from 'swiper/modules';
+import {Swiper, SwiperSlide} from "swiper/react";
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
-const timeout = 60;
+const timeout = 5;
 
 function ChordRandomizer() {
     const settings = {
@@ -15,9 +18,10 @@ function ChordRandomizer() {
         infinite: false,
         speed: 0,
         slidesToShow: 1,
-        slidesToScroll:1,
+        slidesToScroll: 1,
         focusOnSelect: true,
     };
+    const swiperRef = useRef(null);
     const [chord, setChord] = useState(null);
     const [countdown, setCountdown] = useState(timeout);
     const [selectedKeys, setSelectedKeys] = useState(['C', 'D', 'E', 'F', 'G', 'A', 'B']);
@@ -60,7 +64,9 @@ function ChordRandomizer() {
     };
 
     const handleNextChord = () => {
-        setChordCounter(prevCounter => (prevCounter + 1) % chord.length);
+        if (swiperRef.current && swiperRef.current.swiper) {
+            swiperRef.current.swiper.slideNext();
+        }
     };
 
     useEffect(() => {
@@ -71,7 +77,7 @@ function ChordRandomizer() {
 
             intervalRef.current = setInterval(() => {
                 setCountdown(prevCountdown => {
-                    if (prevCountdown <= 1) {
+                    if (prevCountdown < 1) {
                         handleNextChord();
                         return timeout;
                     }
@@ -79,7 +85,10 @@ function ChordRandomizer() {
                 });
             }, 1000);
 
-            return () => clearInterval(intervalRef.current); // Clear interval on component unmount
+            return () => {clearInterval(intervalRef.current);
+                console.log("timer cleared")
+
+            } // Clear interval on component unmount
         }
     }, [chord]);
 
@@ -136,19 +145,29 @@ function ChordRandomizer() {
                     <p>Changing in: {countdown}</p>
                 </div>
             </div>
-            <Slider {...settings} >
+
+            <Swiper
+                ref={swiperRef}
+                pagination={{
+                    type: 'progressbar',
+                }}
+                mousewheel={true}
+                navigation={true}
+                modules={[Pagination, Navigation, Mousewheel]}
+                className="mySwiper"
+            >
                 {chord ? (
-                    Array.from({ length: 2 }, (_, index) => (
-                        <div key={index}>
-                            <MyChord chord={chord[(chordCounter + index) % chord.length]} />
-                        </div>
+                    Array.from({length: 5}, (_, index) => (
+                        <SwiperSlide key={index}>
+                            <MyChord chord={chord[(chordCounter + index) % chord.length]}/>
+                        </SwiperSlide>
                     ))
                 ) : (
                     <div>
                         <p>Loading chord...</p>
-                    </div> // Single loading message
+                    </div>
                 )}
-            </Slider>
+            </Swiper>
         </div>
     );
 }
