@@ -1,9 +1,7 @@
 package org.falconsag.chordpractice.backend;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,19 +33,14 @@ public class ChordPracticeService {
 
 	//format is Key + Quality + (:<voicing_no> or _<fingering> examples
 	// Em7, Cadd9, Dmajor:1, G7_3,2
-	private static final List<String> PERSONAL_CHORDS = List.of("G7:2");
+	private static final List<String> PERSONAL_CHORDS = java.util.List.of("G7:2");
 
-	public ChordPracticeService(ObjectMapper om) throws IOException {
-		try (InputStream is = getClass().getResourceAsStream("/chords.json")) {
-			chordData = om.readValue(is, ChordData.class);
-		}
+	public ChordPracticeService(ObjectMapper om, ChordData chordData, List<Chord> personalChordData) throws IOException {
+		this.chordData = chordData;
+		this.personalChordData = personalChordData;
 		chordSuffixes = new ArrayList<>(chordData.getSuffixes());
 		chordSuffixes.sort((s1, s2) -> s2.length() - s1.length());
 		notationPattern = buildChordNotationPattern();
-		try (InputStream is = getClass().getResourceAsStream("/personal-chords.json")) {
-			personalChordData = om.readValue(is, new TypeReference<>() {
-			});
-		}
 	}
 
 	public List<Chord> getPersonalChords() {
